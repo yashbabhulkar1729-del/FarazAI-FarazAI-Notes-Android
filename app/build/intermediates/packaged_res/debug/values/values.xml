@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="http://schemas.android.com/tools">
+    <color name="app_background">#0A0A14</color>
+    <color name="deep_bg">#0D0820</color>
+    <color name="purple_light">#C084FC</color>
+    <color name="purple_primary">#7C3AED</color>
+    <color name="white">#FFFFFF</color>
+    <string name="app_name">FarazAI Notes</string>
+    <style name="Theme.FarazAINotes" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+        
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightNavigationBar" ns1:targetApi="27">false</item>
+
+        
+        <item name="android:windowBackground">#0A0A14</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
+        
+        <item name="android:windowLayoutInDisplayCutoutMode" ns1:targetApi="o_mr1">shortEdges</item>
+    </style>
+</resources>

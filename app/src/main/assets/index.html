@@ -1,0 +1,808 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--ink:#0d0a08;--ink2:#3a3028;--ink3:#6b5f52;--paper:#faf7f2;--paper2:#f2ede4;--paper3:#e8e0d2;
+--rose:#8b2252;--rose2:#b8336a;--gold:#8b6914;--gold2:#c9920a;--deep:#1a0f2e;
+--deep2:#2d1b4e;--midnight:#0a0a14;--mid2:#141428;
+--accent:#c17f3a;--accent2:#e8a44a;
+--ff-display:'Playfair Display',Georgia,serif;
+--ff-body:'Crimson Pro',Georgia,serif;
+--ff-mono:'JetBrains Mono',monospace;
+--r:16px;--r2:12px;--r3:8px;
+}
+body{font-family:var(--ff-body);background:#111;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:24px 16px;overflow-x:hidden}
+.phone{width:390px;height:844px;background:var(--midnight);border-radius:44px;overflow:hidden;position:relative;box-shadow:0 40px 80px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.08)}
+.screen{position:absolute;inset:0;overflow:hidden;display:none;flex-direction:column}
+.screen.active{display:flex}
+
+/* SPLASH */
+#splash{background:linear-gradient(160deg,#0d0820 0%,#1a0f2e 40%,#0d1520 100%);align-items:center;justify-content:center;gap:0}
+.splash-logo{text-align:center}
+.splash-ornament{font-size:48px;opacity:.6;margin-bottom:12px;filter:hue-rotate(280deg) saturate(1.5)}
+.splash-title{font-family:var(--ff-display);font-size:42px;color:#f0e6ff;letter-spacing:2px;font-style:italic}
+.splash-sub{font-family:var(--ff-body);font-size:14px;color:#9080b0;letter-spacing:4px;margin-top:8px;font-weight:300}
+.splash-line{width:60px;height:1px;background:linear-gradient(90deg,transparent,#8b5cf6,transparent);margin:24px auto}
+.splash-bar{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);width:140px;height:3px;background:#1a1a2e;border-radius:4px;overflow:hidden}
+.splash-progress{height:100%;width:0;background:linear-gradient(90deg,#7c3aed,#c084fc);border-radius:4px;transition:width .05s}
+
+/* NAV BAR */
+.nav{position:absolute;bottom:0;left:0;right:0;height:72px;background:rgba(10,10,20,.95);border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-around;padding:0 8px 8px;z-index:100}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 12px;border:none;background:none;cursor:pointer;color:#605080;transition:color .2s;font-size:10px;font-family:var(--ff-body);letter-spacing:.5px}
+.nav-btn.active{color:#c084fc}
+.nav-icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.status-bar{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0}
+.status-time{color:rgba(255,255,255,.7);font-size:13px;font-weight:500;font-family:var(--ff-mono)}
+.status-icons{display:flex;gap:6px;align-items:center}
+.status-icon{width:16px;height:10px;border:1.5px solid rgba(255,255,255,.5);border-radius:2px;position:relative}
+.status-icon::after{content:'';position:absolute;left:1.5px;top:1.5px;right:1.5px;bottom:1.5px;background:rgba(255,255,255,.7);border-radius:1px}
+
+/* COMMON */
+.page-header{padding:12px 20px 8px;flex-shrink:0}
+.page-title{font-family:var(--ff-display);font-size:28px;color:#f0e8ff;font-style:italic}
+.page-sub{font-size:13px;color:#7060a0;margin-top:2px;font-family:var(--ff-body)}
+.content{flex:1;overflow-y:auto;padding:0 16px 80px;scrollbar-width:none}
+.content::-webkit-scrollbar{display:none}
+
+/* HOME */
+#home{background:var(--midnight)}
+.home-hero{margin:0 16px 16px;padding:20px;background:linear-gradient(135deg,#1a0f35 0%,#2d1b4e 60%,#1a1535 100%);border-radius:20px;border:1px solid rgba(139,92,246,.2);position:relative;overflow:hidden}
+.home-hero::before{content:'';position:absolute;top:-40px;right:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(192,132,252,.15) 0%,transparent 70%);border-radius:50%}
+.hero-greeting{font-size:13px;color:#9070d0;letter-spacing:1px;margin-bottom:4px}
+.hero-name{font-family:var(--ff-display);font-size:22px;color:#f0e8ff;font-style:italic}
+.hero-streak{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06)}
+.streak-num{font-family:var(--ff-display);font-size:28px;color:#e8a44a;font-weight:600}
+.streak-label{font-size:12px;color:#8070a0;line-height:1.4}
+.hero-btn{margin-top:14px;padding:10px 20px;background:linear-gradient(135deg,#7c3aed,#9d4edd);border:none;border-radius:10px;color:#fff;font-family:var(--ff-body);font-size:15px;cursor:pointer;width:100%;letter-spacing:.5px}
+.section-label{font-size:11px;letter-spacing:2px;color:#5a4880;padding:0 4px;margin:16px 0 10px;font-family:var(--ff-mono)}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.cat-card{padding:16px;border-radius:14px;cursor:pointer;border:1px solid transparent;transition:transform .15s,border-color .15s;position:relative;overflow:hidden}
+.cat-card:active{transform:scale(.97)}
+.cat-poems{background:#150c2a;border-color:rgba(139,92,246,.2)}
+.cat-drafts{background:#0a1a14;border-color:rgba(52,211,153,.15)}
+.cat-ideas{background:#1a1000;border-color:rgba(251,191,36,.15)}
+.cat-quotes{background:#1a0a0a;border-color:rgba(244,63,94,.15)}
+.cat-icon{font-size:24px;margin-bottom:8px;display:block}
+.cat-name{font-size:14px;font-weight:500;color:#d0c8e0;font-family:var(--ff-display)}
+.cat-count{font-size:12px;margin-top:2px;color:#806080}
+.recent-card{padding:14px 16px;background:#0f0d1a;border-radius:12px;margin-bottom:8px;cursor:pointer;border:1px solid rgba(255,255,255,.05);transition:border-color .2s}
+.recent-card:active{border-color:rgba(192,132,252,.3)}
+.rc-title{font-family:var(--ff-display);font-size:16px;color:#e0d8f0;font-style:italic}
+.rc-preview{font-size:13px;color:#6050a0;margin-top:4px;line-height:1.6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-style:italic}
+.rc-meta{display:flex;gap:12px;margin-top:8px;font-size:11px;color:#4a3870;font-family:var(--ff-mono)}
+.rc-badge{padding:2px 8px;border-radius:20px;font-size:10px;letter-spacing:.5px}
+.badge-poem{background:rgba(139,92,246,.15);color:#a78bfa}
+.badge-draft{background:rgba(52,211,153,.12);color:#6ee7b7}
+.badge-idea{background:rgba(251,191,36,.12);color:#fcd34d}
+.badge-quote{background:rgba(244,63,94,.12);color:#fb7185}
+
+/* EDITOR */
+#editor{background:#080710}
+.editor-toolbar{display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0}
+.toolbar-btn{padding:6px 14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);border-radius:8px;color:#9080c0;font-family:var(--ff-body);font-size:13px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.toolbar-btn.active,.toolbar-btn:active{background:rgba(139,92,246,.2);border-color:rgba(139,92,246,.4);color:#c084fc}
+.toolbar-sep{width:1px;height:20px;background:rgba(255,255,255,.08);flex-shrink:0}
+.editor-title-wrap{padding:16px 20px 8px;flex-shrink:0}
+.editor-title{background:none;border:none;outline:none;font-family:var(--ff-display);font-size:26px;color:#f0e8ff;font-style:italic;width:100%;placeholder-color:#3a3050}
+.editor-title::placeholder{color:#3a2a5a}
+.editor-body{flex:1;padding:0 20px;overflow-y:auto;scrollbar-width:none}
+.editor-body::-webkit-scrollbar{display:none}
+.line-editor{display:flex;flex-direction:column;gap:2px}
+.poem-line{display:flex;align-items:flex-start;gap:10px}
+.line-num{font-family:var(--ff-mono);font-size:11px;color:#2a2040;margin-top:14px;min-width:20px;text-align:right}
+.line-input{background:none;border:none;outline:none;font-family:var(--ff-body);font-size:18px;color:#e8e0f8;font-style:italic;line-height:1.8;width:100%;resize:none;min-height:46px}
+.line-input::placeholder{color:#2a2040;font-size:16px}
+.stanza-break{height:24px;width:100%;display:flex;align-items:center;padding:0 30px}
+.stanza-break-line{height:1px;background:linear-gradient(90deg,transparent,rgba(139,92,246,.2),transparent);width:100%}
+.add-stanza-btn{margin:8px 30px;padding:8px;border:1px dashed rgba(139,92,246,.2);border-radius:8px;background:none;color:#5a4880;font-size:12px;cursor:pointer;width:calc(100% - 60px);font-family:var(--ff-body);letter-spacing:.5px}
+.prose-editor{width:100%;background:none;border:none;outline:none;font-family:var(--ff-body);font-size:18px;color:#e8e0f8;line-height:2;resize:none;min-height:300px;font-style:italic}
+.prose-editor::placeholder{color:#2a2040}
+.editor-stats{display:flex;gap:16px;padding:8px 20px;border-top:1px solid rgba(255,255,255,.04);flex-shrink:0;background:#080710}
+.stat-item{text-align:center}
+.stat-val{font-family:var(--ff-mono);font-size:15px;color:#7c3aed}
+.stat-lbl{font-size:10px;color:#4a3870;letter-spacing:.5px}
+.ai-panel{background:#0e0c1c;border-top:1px solid rgba(139,92,246,.15);padding:12px 16px;flex-shrink:0;max-height:0;overflow:hidden;transition:max-height .3s}
+.ai-panel.open{max-height:180px}
+.ai-panel-title{font-size:11px;letter-spacing:2px;color:#6050a0;margin-bottom:10px;font-family:var(--ff-mono)}
+.ai-suggestion{padding:10px 14px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.15);border-radius:10px;font-family:var(--ff-body);font-size:15px;color:#c4b8e8;font-style:italic;cursor:pointer;line-height:1.6;margin-bottom:6px}
+.ai-suggestion:active{background:rgba(139,92,246,.15)}
+.ai-loading{display:flex;gap:6px;align-items:center;padding:10px}
+.ai-dot{width:6px;height:6px;background:#7c3aed;border-radius:50%;animation:pulse 1.2s ease-in-out infinite}
+.ai-dot:nth-child(2){animation-delay:.2s}
+.ai-dot:nth-child(3){animation-delay:.4s}
+@keyframes pulse{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+
+/* PROMPTS */
+#prompts{background:#0a0810}
+.prompt-filter{display:flex;gap:8px;padding:8px 16px 12px;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.prompt-filter::-webkit-scrollbar{display:none}
+.filter-chip{padding:6px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#8070a0;font-size:13px;cursor:pointer;white-space:nowrap;font-family:var(--ff-body);transition:all .2s}
+.filter-chip.active{background:rgba(139,92,246,.2);border-color:rgba(139,92,246,.4);color:#c084fc}
+.prompt-card{margin-bottom:12px;padding:18px;background:#0f0d1c;border-radius:16px;border:1px solid rgba(255,255,255,.05);cursor:pointer;transition:border-color .2s,transform .15s}
+.prompt-card:active{transform:scale(.98);border-color:rgba(139,92,246,.3)}
+.prompt-genre{font-size:10px;letter-spacing:2px;color:#5a4880;margin-bottom:8px;font-family:var(--ff-mono)}
+.prompt-text{font-family:var(--ff-display);font-size:18px;color:#e0d8f8;line-height:1.6;font-style:italic}
+.prompt-mood{display:flex;gap:6px;margin-top:12px}
+.mood-tag{padding:3px 10px;border-radius:20px;font-size:11px}
+.mood-melancholy{background:rgba(99,102,241,.15);color:#a5b4fc}
+.mood-romantic{background:rgba(244,63,94,.12);color:#fda4af}
+.mood-intense{background:rgba(239,68,68,.15);color:#fca5a5}
+.mood-serene{background:rgba(52,211,153,.1);color:#6ee7b7}
+.mood-dark{background:rgba(167,139,250,.1);color:#ddd6fe}
+.generate-btn{margin:0 16px 12px;padding:14px;background:linear-gradient(135deg,#7c3aed,#9d4edd);border:none;border-radius:14px;color:#fff;font-family:var(--ff-body);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0}
+.generate-btn:active{opacity:.9;transform:scale(.98)}
+.spin-icon{display:inline-block;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* STATS */
+#stats{background:#08080f}
+.stats-hero{margin:0 16px 16px;padding:20px;background:linear-gradient(135deg,#0f0c20,#1a1535);border-radius:20px;border:1px solid rgba(192,132,252,.1);text-align:center}
+.stats-big{font-family:var(--ff-display);font-size:56px;color:#c084fc;line-height:1}
+.stats-big-label{font-size:13px;color:#6050a0;margin-top:6px;letter-spacing:1px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stats-card{padding:16px;background:#0f0d1a;border-radius:14px;border:1px solid rgba(255,255,255,.05)}
+.sc-num{font-family:var(--ff-mono);font-size:28px;color:#e8e0f8;font-weight:300}
+.sc-lbl{font-size:12px;color:#5a4880;margin-top:4px}
+.streak-calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:16px}
+.cal-day{height:32px;border-radius:6px;background:#0f0d1a;border:1px solid rgba(255,255,255,.04)}
+.cal-day.wrote{background:rgba(124,58,237,.3);border-color:rgba(124,58,237,.4)}
+.cal-day.today{border-color:#c084fc;background:rgba(124,58,237,.5)}
+.mood-chart{height:80px;display:flex;align-items:flex-end;gap:4px;padding:0 4px}
+.mood-bar{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(to top,#7c3aed,#c084fc);transition:height .5s ease;min-height:4px}
+
+/* SETTINGS */
+#settings{background:#08080f}
+.settings-section{margin-bottom:20px}
+.settings-section-label{font-size:10px;letter-spacing:2px;color:#4a3870;padding:0 4px;margin-bottom:8px;font-family:var(--ff-mono)}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#0f0d1a;border-radius:12px;margin-bottom:6px;border:1px solid rgba(255,255,255,.04)}
+.setting-row:active{border-color:rgba(139,92,246,.2)}
+.setting-label{font-size:15px;color:#d0c8e0;font-family:var(--ff-body)}
+.setting-sub{font-size:12px;color:#5a4880;margin-top:2px}
+.toggle{width:44px;height:24px;background:#1a1a2e;border-radius:12px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle.on{background:#7c3aed}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .2s}
+.toggle.on::after{transform:translateX(20px)}
+.theme-row{display:flex;gap:8px;padding:8px 0}
+.theme-swatch{padding:10px 16px;border-radius:10px;font-size:13px;cursor:pointer;border:2px solid transparent;font-family:var(--ff-body);transition:border-color .2s}
+.theme-dark{background:#1a1a2e;color:#a78bfa}
+.theme-romantic{background:#1a0814;color:#f9a8d4}
+.theme-intense{background:#180808;color:#fca5a5}
+.theme-swatch.selected{border-color:rgba(255,255,255,.3)}
+.setting-arrow{color:#3a3060;font-size:18px}
+.setting-select{background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.3);border-radius:8px;padding:4px 10px;font-family:var(--ff-body);font-size:13px;outline:none}
+
+/* MODAL */
+.modal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.8);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+.modal-sheet{background:#13101e;border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-height:70%;overflow-y:auto;border-top:1px solid rgba(255,255,255,.08)}
+.modal-handle{width:40px;height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin:0 auto 20px}
+.modal-title{font-family:var(--ff-display);font-size:22px;color:#f0e8ff;font-style:italic;margin-bottom:4px}
+.modal-sub{font-size:13px;color:#6050a0;margin-bottom:20px}
+.modal-btn{padding:14px;background:linear-gradient(135deg,#7c3aed,#9d4edd);border:none;border-radius:12px;color:#fff;font-family:var(--ff-body);font-size:16px;cursor:pointer;width:100%;margin-top:8px;letter-spacing:.5px}
+.modal-btn-ghost{padding:14px;background:none;border:1px solid rgba(255,255,255,.1);border-radius:12px;color:#8070b0;font-family:var(--ff-body);font-size:15px;cursor:pointer;width:100%;margin-top:8px}
+.modal-input{width:100%;background:#1a1728;border:1px solid rgba(139,92,246,.2);border-radius:10px;padding:12px 14px;color:#e0d8f0;font-family:var(--ff-body);font-size:16px;outline:none;margin-bottom:10px}
+.modal-input:focus{border-color:rgba(139,92,246,.5)}
+.modal-input::placeholder{color:#3a2a5a}
+.synonyms-grid{display:flex;flex-wrap:wrap;gap:8px}
+.synonym-chip{padding:8px 16px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.2);border-radius:20px;color:#c4b8e8;font-size:14px;cursor:pointer;font-family:var(--ff-body);font-style:italic;transition:all .15s}
+.synonym-chip:active{background:rgba(139,92,246,.3)}
+
+/* LOGIN */
+#login{background:linear-gradient(160deg,#0d0820 0%,#1a0f2e 100%);align-items:center;justify-content:center;padding:32px 24px}
+.login-logo{font-family:var(--ff-display);font-size:44px;color:#f0e6ff;font-style:italic;text-align:center;margin-bottom:4px}
+.login-tagline{font-size:14px;color:#7060a0;text-align:center;margin-bottom:40px;letter-spacing:1px}
+.login-form{width:100%}
+.form-field{margin-bottom:14px}
+.form-label{font-size:12px;color:#7060a0;letter-spacing:1px;margin-bottom:6px;display:block;font-family:var(--ff-mono)}
+.form-input{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;color:#e8e0f8;font-family:var(--ff-body);font-size:16px;outline:none}
+.form-input:focus{border-color:rgba(139,92,246,.5)}
+.form-input::placeholder{color:#3a2a5a}
+.login-btn{width:100%;padding:16px;background:linear-gradient(135deg,#7c3aed,#9d4edd);border:none;border-radius:14px;color:#fff;font-family:var(--ff-display);font-size:18px;cursor:pointer;margin-top:8px;letter-spacing:1px;font-style:italic}
+.login-skip{width:100%;padding:14px;background:none;border:none;color:#5a4880;font-family:var(--ff-body);font-size:14px;cursor:pointer;margin-top:8px;letter-spacing:.5px}
+.login-divider{display:flex;align-items:center;gap:12px;margin:20px 0}
+.ld-line{flex:1;height:1px;background:rgba(255,255,255,.08)}
+.ld-text{font-size:12px;color:#5a4880}
+.login-alt{display:flex;gap:10px}
+.login-alt-btn{flex:1;padding:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:12px;color:#a090c0;font-family:var(--ff-body);font-size:14px;cursor:pointer;text-align:center}
+
+/* FAB */
+.fab{position:absolute;bottom:86px;right:20px;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#9d4edd);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;box-shadow:0 4px 20px rgba(124,58,237,.4);z-index:50}
+.fab:active{transform:scale(.95)}
+
+.distraction-free #editor-header-btns,.distraction-free .editor-toolbar,.distraction-free .editor-stats,.distraction-free .ai-panel,.distraction-free .nav{opacity:0;pointer-events:none;transition:opacity .3s}
+.distraction-free .editor-title-wrap,.distraction-free .editor-body{transition:padding .3s}
+</style>
+</head>
+<body>
+<div class="phone" id="phone">
+
+  <!-- SPLASH -->
+  <div class="screen active" id="splash">
+    <div class="splash-logo">
+      <div class="splash-ornament">✦</div>
+      <div class="splash-title">FarazAI</div>
+      <div class="splash-line"></div>
+      <div class="splash-sub">for writers & poets</div>
+    </div>
+    <div class="splash-bar"><div class="splash-progress" id="sp"></div></div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="screen" id="login">
+    <div style="position:absolute;top:30px;right:24px;opacity:.15;font-family:var(--ff-display);font-size:80px;color:#c084fc;pointer-events:none;font-style:italic;line-height:1">F</div>
+    <div class="login-logo">FarazAI</div>
+    <div class="login-tagline">where words find their home</div>
+    <div class="login-form">
+      <div class="form-field">
+        <label class="form-label">email</label>
+        <input class="form-input" type="email" placeholder="you@email.com">
+      </div>
+      <div class="form-field">
+        <label class="form-label">password</label>
+        <input class="form-input" type="password" placeholder="••••••••">
+      </div>
+      <button class="login-btn" onclick="goTo('home')">Begin Writing</button>
+      <button class="login-skip" onclick="goTo('home')">skip for now →</button>
+      <div class="login-divider"><div class="ld-line"></div><div class="ld-text">or continue with</div><div class="ld-line"></div></div>
+      <div class="login-alt">
+        <button class="login-alt-btn">Google</button>
+        <button class="login-alt-btn">Apple</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="screen" id="home">
+    <div class="status-bar"><span class="status-time">9:41</span><div class="status-icons"><div class="status-icon"></div></div></div>
+    <div class="page-header"><div class="page-title">My Writings</div><div class="page-sub">7 pieces · 12 day streak 🔥</div></div>
+    <div style="flex:1;overflow-y:auto;padding:0 16px 80px;scrollbar-width:none">
+      <div class="home-hero">
+        <div class="hero-greeting">Good evening, Faraz</div>
+        <div class="hero-name">"Every line a heartbeat"</div>
+        <div class="hero-streak">
+          <div class="streak-num">12</div>
+          <div class="streak-label">day writing streak<br><span style="color:#6050a0;font-size:11px">keep the flame alive</span></div>
+        </div>
+        <button class="hero-btn" onclick="openNewEditor('poem')">+ New Poem</button>
+      </div>
+      <div class="section-label">COLLECTIONS</div>
+      <div class="cats">
+        <div class="cat-card cat-poems" onclick="filterCategory('poem')"><span class="cat-icon">🌙</span><div class="cat-name">Poems</div><div class="cat-count">4 pieces</div></div>
+        <div class="cat-card cat-drafts" onclick="filterCategory('draft')"><span class="cat-icon">📝</span><div class="cat-name">Drafts</div><div class="cat-count">1 draft</div></div>
+        <div class="cat-card cat-ideas" onclick="filterCategory('idea')"><span class="cat-icon">💡</span><div class="cat-name">Ideas</div><div class="cat-count">1 idea</div></div>
+        <div class="cat-card cat-quotes" onclick="filterCategory('quote')"><span class="cat-icon">❝</span><div class="cat-name">Quotes</div><div class="cat-count">1 quote</div></div>
+      </div>
+      <div class="section-label">RECENT</div>
+      <div id="recent-list"></div>
+    </div>
+    <button class="fab" onclick="openNewEditor('poem')">+</button>
+  </div>
+
+  <!-- EDITOR -->
+  <div class="screen" id="editor">
+    <div class="status-bar" style="padding:0 16px">
+      <button onclick="saveAndGoHome()" style="background:none;border:none;color:#7060a0;font-size:22px;cursor:pointer;padding:0 8px 0 0">‹</button>
+      <div style="flex:1;text-align:center;font-size:12px;color:#5a4880;letter-spacing:1px;font-family:var(--ff-mono)" id="editor-save-status">unsaved</div>
+      <div id="editor-header-btns" style="display:flex;gap:8px">
+        <button id="df-btn" onclick="toggleDF()" style="background:none;border:none;color:#7060a0;font-size:16px;cursor:pointer" title="Distraction Free">⊡</button>
+        <button onclick="openSynonymModal()" style="background:none;border:none;color:#7060a0;font-size:16px;cursor:pointer" title="Synonyms">◈</button>
+        <button onclick="toggleAI()" style="background:none;border:none;color:#a78bfa;font-size:16px;cursor:pointer" title="AI Assist">✦</button>
+      </div>
+    </div>
+    <div class="editor-toolbar" id="editor-toolbar">
+      <button class="toolbar-btn active" id="btn-poem" onclick="setMode('poem')">Poetry</button>
+      <button class="toolbar-btn" id="btn-prose" onclick="setMode('prose')">Prose</button>
+      <div class="toolbar-sep"></div>
+      <button class="toolbar-btn" id="btn-cat" onclick="openCatModal()" style="font-size:12px">🌙 Poem</button>
+      <button class="toolbar-btn" onclick="toggleDF()" style="font-size:12px">Focus</button>
+    </div>
+    <div class="editor-title-wrap">
+      <input class="editor-title" id="editor-title" placeholder="Untitled verse…" oninput="updateStats()">
+    </div>
+    <div class="editor-body content" id="editor-content">
+      <div class="line-editor" id="line-editor"></div>
+      <textarea class="prose-editor" id="prose-editor" placeholder="Let your thoughts flow…" oninput="updateStats()" style="display:none"></textarea>
+    </div>
+    <div class="editor-stats">
+      <div class="stat-item"><div class="stat-val" id="s-words">0</div><div class="stat-lbl">WORDS</div></div>
+      <div class="stat-item"><div class="stat-val" id="s-lines">0</div><div class="stat-lbl">LINES</div></div>
+      <div class="stat-item"><div class="stat-val" id="s-stanzas">0</div><div class="stat-lbl">STANZAS</div></div>
+      <div class="stat-item"><div class="stat-val" id="s-chars">0</div><div class="stat-lbl">CHARS</div></div>
+    </div>
+    <div class="ai-panel" id="ai-panel">
+      <div class="ai-panel-title">AI SUGGESTION ✦</div>
+      <div id="ai-content"><div style="font-size:13px;color:#5a4880;font-style:italic;padding:8px 0">Press ✦ to get AI line suggestions…</div></div>
+    </div>
+  </div>
+
+  <!-- PROMPTS -->
+  <div class="screen" id="prompts">
+    <div class="status-bar"><span class="status-time">9:41</span></div>
+    <div class="page-header"><div class="page-title">Spark</div><div class="page-sub">writing prompts & inspiration</div></div>
+    <button class="generate-btn" id="gen-btn" onclick="generatePrompts()"><span>✦</span> Generate New Prompts</button>
+    <div class="prompt-filter">
+      <button class="filter-chip active" onclick="filterPrompt(this,'All')">All</button>
+      <button class="filter-chip" onclick="filterPrompt(this,'Romantic')">Romantic</button>
+      <button class="filter-chip" onclick="filterPrompt(this,'Dark')">Dark</button>
+      <button class="filter-chip" onclick="filterPrompt(this,'Nature')">Nature</button>
+      <button class="filter-chip" onclick="filterPrompt(this,'Longing')">Longing</button>
+    </div>
+    <div class="content" id="prompts-list"></div>
+  </div>
+
+  <!-- STATS -->
+  <div class="screen" id="stats">
+    <div class="status-bar"><span class="status-time">9:41</span></div>
+    <div class="page-header"><div class="page-title">Your Journey</div><div class="page-sub">writing insights</div></div>
+    <div class="content">
+      <div class="stats-hero">
+        <div class="stats-big" id="total-words-stat">847</div>
+        <div class="stats-big-label">TOTAL WORDS WRITTEN</div>
+      </div>
+      <div class="stats-grid">
+        <div class="stats-card"><div class="sc-num" id="stat-poems">4</div><div class="sc-lbl">Poems</div></div>
+        <div class="stats-card"><div class="sc-num">12</div><div class="sc-lbl">Day Streak</div></div>
+        <div class="stats-card"><div class="sc-num" id="stat-lines">38</div><div class="sc-lbl">Lines</div></div>
+        <div class="stats-card"><div class="sc-num">3</div><div class="sc-lbl">Stanzas</div></div>
+      </div>
+      <div class="section-label" style="padding:0 4px;margin:0 0 10px">WRITING DAYS THIS MONTH</div>
+      <div class="streak-calendar" id="cal" style="padding:0 4px;margin-bottom:16px"></div>
+      <div class="section-label" style="padding:0 4px;margin:0 0 10px">MOOD OF YOUR WRITING</div>
+      <div class="stats-card" style="margin-bottom:16px">
+        <div class="mood-chart" id="mood-chart"></div>
+        <div style="display:flex;justify-content:space-around;margin-top:8px">
+          <span style="font-size:10px;color:#5a4880;font-family:var(--ff-mono)">Dark</span>
+          <span style="font-size:10px;color:#5a4880;font-family:var(--ff-mono)">Romantic</span>
+          <span style="font-size:10px;color:#5a4880;font-family:var(--ff-mono)">Longing</span>
+          <span style="font-size:10px;color:#5a4880;font-family:var(--ff-mono)">Serene</span>
+          <span style="font-size:10px;color:#5a4880;font-family:var(--ff-mono)">Intense</span>
+        </div>
+      </div>
+      <div class="section-label" style="padding:0 4px;margin:0 0 10px">MOST USED WORDS</div>
+      <div class="stats-card">
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <span style="padding:4px 12px;background:rgba(124,58,237,.15);border-radius:20px;font-size:13px;color:#a78bfa;font-style:italic">silence</span>
+          <span style="padding:4px 12px;background:rgba(244,63,94,.1);border-radius:20px;font-size:13px;color:#fb7185;font-style:italic">moon</span>
+          <span style="padding:4px 12px;background:rgba(52,211,153,.1);border-radius:20px;font-size:13px;color:#6ee7b7;font-style:italic">breath</span>
+          <span style="padding:4px 12px;background:rgba(251,191,36,.1);border-radius:20px;font-size:13px;color:#fcd34d;font-style:italic">ember</span>
+          <span style="padding:4px 12px;background:rgba(124,58,237,.15);border-radius:20px;font-size:13px;color:#a78bfa;font-style:italic">longing</span>
+          <span style="padding:4px 12px;background:rgba(244,63,94,.1);border-radius:20px;font-size:13px;color:#fb7185;font-style:italic">hollow</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="screen" id="settings">
+    <div class="status-bar"><span class="status-time">9:41</span></div>
+    <div class="page-header"><div class="page-title">Settings</div></div>
+    <div class="content">
+      <div class="settings-section">
+        <div class="settings-section-label">APPEARANCE</div>
+        <div class="setting-row"><div><div class="setting-label">Theme</div></div>
+          <div class="theme-row">
+            <div class="theme-swatch theme-dark selected" onclick="selectTheme(this,'dark')">Dark</div>
+            <div class="theme-swatch theme-romantic" onclick="selectTheme(this,'romantic')">Romantic</div>
+            <div class="theme-swatch theme-intense" onclick="selectTheme(this,'intense')">Intense</div>
+          </div>
+        </div>
+        <div class="setting-row"><div><div class="setting-label">Font Style</div><div class="setting-sub">Crimson Pro (default)</div></div>
+          <select class="setting-select" onchange="changeFont(this.value)"><option value="crimson">Crimson Pro</option><option value="playfair">Playfair</option><option value="mono">Monospace</option></select>
+        </div>
+        <div class="setting-row"><div><div class="setting-label">Larger Text</div></div><div class="toggle" id="toggle-text" onclick="toggleSetting('toggle-text')"></div></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-label">WRITING</div>
+        <div class="setting-row"><div><div class="setting-label">Auto-save</div><div class="setting-sub">Save every 30 seconds</div></div><div class="toggle on" id="toggle-auto" onclick="toggleSetting('toggle-auto')"></div></div>
+        <div class="setting-row"><div><div class="setting-label">Distraction Free</div><div class="setting-sub">Hide all UI while writing</div></div><div class="toggle" id="toggle-df" onclick="toggleSetting('toggle-df')"></div></div>
+        <div class="setting-row"><div><div class="setting-label">Spell Check</div></div><div class="toggle on" id="toggle-spell" onclick="toggleSetting('toggle-spell')"></div></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-label">PRIVACY</div>
+        <div class="setting-row" onclick="openPinModal()" style="cursor:pointer"><div><div class="setting-label">Lock with PIN</div><div class="setting-sub">Protect your writings</div></div><div class="setting-arrow">›</div></div>
+        <div class="setting-row"><div><div class="setting-label">iCloud Backup</div></div><div class="toggle" id="toggle-icloud" onclick="toggleSetting('toggle-icloud')"></div></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-label">AI FEATURES</div>
+        <div class="setting-row"><div><div class="setting-label">AI Suggestions</div><div class="setting-sub">Next line poetry assist</div></div><div class="toggle on" id="toggle-ai" onclick="toggleSetting('toggle-ai')"></div></div>
+        <div class="setting-row"><div><div class="setting-label">Voice Input</div><div class="setting-sub">Speak to write</div></div><div class="toggle" id="toggle-voice" onclick="toggleSetting('toggle-voice')"></div></div>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-label">ACCOUNT</div>
+        <div class="setting-row" style="cursor:pointer" onclick="goTo('login')"><div><div class="setting-label">Sign Out</div></div><div class="setting-arrow">›</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="nav" id="bottom-nav">
+    <button class="nav-btn active" id="nav-home" onclick="navTo('home')"><div class="nav-icon">⌂</div><span>Home</span></button>
+    <button class="nav-btn" id="nav-prompts" onclick="navTo('prompts')"><div class="nav-icon">✦</div><span>Spark</span></button>
+    <button class="nav-btn" id="nav-stats" onclick="navTo('stats')"><div class="nav-icon">◉</div><span>Stats</span></button>
+    <button class="nav-btn" id="nav-settings" onclick="navTo('settings')"><div class="nav-icon">⚙</div><span>Settings</span></button>
+  </nav>
+
+  <!-- MODAL OVERLAY -->
+  <div class="modal-overlay" id="modal" style="display:none" onclick="closeModal(event)">
+    <div class="modal-sheet" id="modal-content" onclick="e=>e.stopPropagation()">
+      <div class="modal-handle"></div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const API_URL="https://api.anthropic.com/v1/messages";
+const MODEL="claude-sonnet-4-20250514";
+
+let currentScreen="splash",editorMode="poem",currentNote=null,dfMode=false;
+let notes=[
+  {id:1,title:"Moth to Midnight",content:["I am the moth that burns","in the lantern of your name,","circling what I cannot hold","til silence becomes my flame."],category:"poem",words:22,lines:4,stanzas:1,date:"Apr 12"},
+  {id:2,title:"Ghazal of the Unnamed",content:["There are words I have swallowed whole","they live beneath my ribs, unnamed.","Like rivers that forget the sea","they wander, quiet, half-ashamed.","You asked me once what silence tastes like—","I said: it tastes like your name, unnamed."],category:"poem",words:44,lines:6,stanzas:2,date:"Apr 10"},
+  {id:3,title:"Fragments",content:["What if loss isn't absence but weight—","the heavy shape of what stayed."],category:"draft",words:16,lines:2,stanzas:1,date:"Apr 9"},
+  {id:4,title:"The space between",content:["write about the pause before a goodbye"],category:"idea",words:7,lines:1,stanzas:1,date:"Apr 8"},
+  {id:5,title:"Borrowed Silence",content:["\"Not all silences are empty — some are full of the things we dared not say.\""],category:"quote",words:18,lines:1,stanzas:1,date:"Apr 7"},
+];
+let prompts=[
+  {genre:"ROMANTIC",text:"Write about the taste of a word you never said to someone who needed to hear it.",moods:["romantic","longing"]},
+  {genre:"DARK",text:"Describe the color of forgetting — not blue, not black, but something without a name.",moods:["dark","intense"]},
+  {genre:"NATURE",text:"A river meets the sea for the last time. What do they say in the language of water?",moods:["serene","longing"]},
+  {genre:"LONGING",text:"Write from the perspective of the space between two people in a photograph.",moods:["longing","melancholy"]},
+  {genre:"DARK",text:"You are the echo in an empty house. Who are you missing?",moods:["dark","melancholy"]},
+  {genre:"ROMANTIC",text:"Your hands remember a touch your mind has forgotten. Describe the memory in your palms.",moods:["romantic","intense"]},
+];
+let stanzaLines=[[{id:1,val:""}]];
+let currentFilter="All";
+
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  currentScreen=id;
+  const navIds=['home','prompts','stats','settings'];
+  document.getElementById('bottom-nav').style.display=navIds.includes(id)?'flex':'none';
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if(navIds.includes(id))document.getElementById('nav-'+id)?.classList.add('active');
+  if(id==='home')renderRecent();
+  if(id==='prompts')renderPrompts();
+  if(id==='stats')renderStats();
+}
+
+function navTo(id){goTo(id)}
+
+// SPLASH
+setTimeout(()=>{
+  let w=0;const i=setInterval(()=>{
+    w+=2;document.getElementById('sp').style.width=w+'%';
+    if(w>=100){clearInterval(i);goTo('login')}
+  },40);
+},300);
+
+// RECENT LIST
+function renderRecent(){
+  const cats={poem:'badge-poem',draft:'badge-draft',idea:'badge-idea',quote:'badge-quote'};
+  const filtered=currentFilter==='All'?notes:notes.filter(n=>n.category===currentFilter);
+  document.getElementById('recent-list').innerHTML=filtered.map(n=>`
+    <div class="recent-card" onclick="openEditor(${n.id})">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div class="rc-title">${n.title}</div>
+        <span class="rc-badge ${cats[n.category]||'badge-poem'}">${n.category}</span>
+      </div>
+      <div class="rc-preview">${Array.isArray(n.content)?n.content[0]:n.content}</div>
+      <div class="rc-meta"><span>${n.date}</span><span>${n.words}w</span><span>${n.lines}L</span></div>
+    </div>`).join('');
+}
+
+function filterCategory(cat){currentFilter=cat;renderRecent()}
+
+// EDITOR
+function openNewEditor(cat){
+  currentNote=null;stanzaLines=[[{id:1,val:""}]];
+  document.getElementById('editor-title').value='';
+  document.getElementById('editor-save-status').textContent='unsaved';
+  document.getElementById('btn-cat').textContent='🌙 Poem';
+  setMode('poem');goTo('editor');
+  document.getElementById('bottom-nav').style.display='none';
+}
+function openEditor(id){
+  currentNote=notes.find(n=>n.id===id);
+  if(!currentNote)return;
+  document.getElementById('editor-title').value=currentNote.title;
+  if(currentNote.category==='poem'||currentNote.category==='draft'){
+    setMode('poem');
+    const lines=Array.isArray(currentNote.content)?currentNote.content:[currentNote.content];
+    stanzaLines=[];let stanza=[];
+    lines.forEach((l,i)=>{
+      stanza.push({id:i+1,val:l});
+      if((i+1)%4===0&&i<lines.length-1){stanzaLines.push(stanza);stanza=[]}
+    });
+    stanzaLines.push(stanza);
+    renderLines();
+  }else{
+    setMode('prose');
+    document.getElementById('prose-editor').value=Array.isArray(currentNote.content)?currentNote.content.join('\n'):currentNote.content;
+  }
+  document.getElementById('editor-save-status').textContent='saved';
+  const cats={poem:'🌙 Poem',draft:'📝 Draft',idea:'💡 Idea',quote:'❝ Quote'};
+  document.getElementById('btn-cat').textContent=cats[currentNote.category]||'🌙 Poem';
+  updateStats();goTo('editor');
+  document.getElementById('bottom-nav').style.display='none';
+}
+
+function setMode(m){
+  editorMode=m;
+  document.getElementById('btn-poem').classList.toggle('active',m==='poem');
+  document.getElementById('btn-prose').classList.toggle('active',m==='prose');
+  document.getElementById('line-editor').style.display=m==='poem'?'flex':'none';
+  document.getElementById('prose-editor').style.display=m==='prose'?'block':'none';
+  if(m==='poem')renderLines();
+}
+
+function renderLines(){
+  const le=document.getElementById('line-editor');
+  le.innerHTML='';let lineCount=0;
+  stanzaLines.forEach((stanza,si)=>{
+    stanza.forEach((line,li)=>{
+      lineCount++;
+      const div=document.createElement('div');div.className='poem-line';
+      const num=document.createElement('div');num.className='line-num';num.textContent=lineCount;
+      const inp=document.createElement('textarea');
+      inp.className='line-input';inp.placeholder=li===0?'Begin your verse…':'continue the thought…';
+      inp.value=line.val;inp.dataset.si=si;inp.dataset.li=li;
+      inp.addEventListener('input',function(){
+        stanzaLines[+this.dataset.si][+this.dataset.li].val=this.value;
+        autoResize(this);updateStats();
+        document.getElementById('editor-save-status').textContent='editing…';
+      });
+      inp.addEventListener('keydown',function(e){
+        if(e.key==='Enter'&&!e.shiftKey){
+          e.preventDefault();
+          const si2=+this.dataset.si,li2=+this.dataset.li;
+          stanzaLines[si2].splice(li2+1,0,{id:Date.now(),val:''});
+          renderLines();
+          setTimeout(()=>{
+            const inputs=document.querySelectorAll('.line-input');
+            let c=0;for(let s2=0;s2<=si2;s2++)c+=(s2<si2?stanzaLines[s2].length:li2+1);
+            if(inputs[c])inputs[c].focus();
+          },50);
+        }
+      });
+      div.appendChild(num);div.appendChild(inp);le.appendChild(div);
+    });
+    if(si<stanzaLines.length-1){
+      const sb=document.createElement('div');sb.className='stanza-break';
+      sb.innerHTML='<div class="stanza-break-line"></div>';le.appendChild(sb);
+    }
+  });
+  const addBtn=document.createElement('button');addBtn.className='add-stanza-btn';addBtn.textContent='+ New Stanza';
+  addBtn.onclick=()=>{stanzaLines.push([{id:Date.now(),val:''}]);renderLines();setTimeout(()=>{const is=document.querySelectorAll('.line-input');if(is.length)is[is.length-1].focus()},50)};
+  le.appendChild(addBtn);
+  document.querySelectorAll('.line-input').forEach(autoResize);
+  updateStats();
+}
+
+function autoResize(el){el.style.height='auto';el.style.height=(el.scrollHeight)+'px'}
+
+function getAllLines(){
+  if(editorMode==='poem'){return stanzaLines.flat().map(l=>l.val).filter(Boolean)}
+  return document.getElementById('prose-editor').value.split('\n').filter(Boolean);
+}
+
+function updateStats(){
+  const lines=getAllLines();
+  const allText=lines.join(' ');
+  const words=allText.trim()?allText.trim().split(/\s+/).length:0;
+  document.getElementById('s-words').textContent=words;
+  document.getElementById('s-lines').textContent=lines.length;
+  document.getElementById('s-stanzas').textContent=editorMode==='poem'?stanzaLines.filter(s=>s.some(l=>l.val)).length:1;
+  document.getElementById('s-chars').textContent=allText.length;
+}
+
+function saveAndGoHome(){
+  const title=document.getElementById('editor-title').value||'Untitled';
+  const lines=getAllLines();
+  const words=lines.join(' ').trim()?lines.join(' ').trim().split(/\s+/).length:0;
+  if(currentNote){
+    currentNote.title=title;currentNote.content=lines;currentNote.words=words;currentNote.lines=lines.length;
+  }else if(lines.some(Boolean)||title!=='Untitled'){
+    notes.unshift({id:Date.now(),title,content:lines,category:'poem',words,lines:lines.length,stanzas:stanzaLines.length,date:'Apr 15'});
+  }
+  document.getElementById('editor-save-status').textContent='saved';
+  if(dfMode)toggleDF();
+  goTo('home');currentFilter='All';
+}
+
+// AI FEATURES
+let aiOpen=false;
+function toggleAI(){
+  aiOpen=!aiOpen;
+  document.getElementById('ai-panel').classList.toggle('open',aiOpen);
+  if(aiOpen)suggestNextLine();
+}
+
+async function suggestNextLine(){
+  const lines=getAllLines();const title=document.getElementById('editor-title').value;
+  if(!lines.length&&!title){
+    document.getElementById('ai-content').innerHTML='<div style="font-size:13px;color:#5a4880;font-style:italic;padding:8px 0">Write a few lines first, then I\'ll suggest what comes next…</div>';return;
+  }
+  document.getElementById('ai-content').innerHTML='<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>';
+  const ctx=lines.slice(-4).join('\n');
+  try{
+    const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:MODEL,max_tokens:1000,messages:[{role:'user',content:`You are a poetic AI assistant. Given this poem excerpt:\n\nTitle: "${title}"\n\n${ctx}\n\nSuggest 2 beautiful, evocative next lines that continue the emotional and rhythmic flow. Each suggestion on its own line, no numbering, no explanation. Just the poetry. Keep each line under 12 words.`}]})});
+    const data=await res.json();
+    const text=data.content?.map(b=>b.text||'').join('').trim();
+    const suggestions=text.split('\n').filter(Boolean).slice(0,2);
+    document.getElementById('ai-content').innerHTML=suggestions.map(s=>`<div class="ai-suggestion" onclick="insertAISuggestion('${s.replace(/'/g,"\\'")}')">✦ ${s}</div>`).join('');
+  }catch(e){
+    document.getElementById('ai-content').innerHTML='<div style="font-size:13px;color:#5a4880;padding:8px 0">Could not reach AI. Check your connection.</div>';
+  }
+}
+
+function insertAISuggestion(line){
+  if(editorMode==='poem'){
+    const lastStanza=stanzaLines[stanzaLines.length-1];
+    const last=lastStanza[lastStanza.length-1];
+    if(!last.val){last.val=line}else{lastStanza.push({id:Date.now(),val:line})}
+    renderLines();
+  }else{
+    const ta=document.getElementById('prose-editor');
+    ta.value+=(ta.value?'\n':'')+line;
+    autoResize(ta);
+  }
+  updateStats();
+  document.getElementById('editor-save-status').textContent='editing…';
+}
+
+// SYNONYMS
+function openSynonymModal(){
+  const lines=getAllLines();const text=lines.join(' ').split(/\s+/);
+  const wordList=[...new Set(text.filter(w=>w.length>4))].slice(0,8);
+  if(!wordList.length){openModalWith('<div class="modal-title">Synonyms</div><div class="modal-sub">Write a few words first, then select one to explore synonyms.</div>');return;}
+  const selected=wordList[Math.floor(Math.random()*wordList.length)].replace(/[^a-zA-Z]/g,'');
+  fetchSynonyms(selected);
+}
+
+async function fetchSynonyms(word){
+  openModalWith(`<div class="modal-title">Synonyms for "${word}"</div><div class="modal-sub">Poetic alternatives</div><div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div>`);
+  try{
+    const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:MODEL,max_tokens:1000,messages:[{role:'user',content:`Give 8 poetic, evocative synonyms or alternative words for "${word}" that a poet might prefer. Reply with ONLY the words, one per line, no explanations, no numbering.`}]})});
+    const data=await res.json();
+    const syns=data.content?.map(b=>b.text||'').join('').trim().split('\n').filter(Boolean).slice(0,8);
+    document.getElementById('modal-body').innerHTML=`<div class="modal-title">Synonyms for "${word}"</div><div class="modal-sub">Tap to copy to clipboard</div><div class="synonyms-grid">${syns.map(s=>`<div class="synonym-chip" onclick="copyWord('${s.trim()}')">${s.trim()}</div>`).join('')}</div><button class="modal-btn-ghost" onclick="closeModal()">Close</button>`;
+  }catch(e){
+    document.getElementById('modal-body').innerHTML=`<div class="modal-title">Synonyms</div><div class="modal-sub">Could not reach AI.</div><button class="modal-btn-ghost" onclick="closeModal()">Close</button>`;
+  }
+}
+
+function copyWord(w){
+  navigator.clipboard?.writeText(w).catch(()=>{});
+  const chips=document.querySelectorAll('.synonym-chip');
+  chips.forEach(c=>{if(c.textContent===w){c.style.background='rgba(139,92,246,.4)';setTimeout(()=>c.style.background='',600)}});
+}
+
+// PROMPTS
+async function generatePrompts(){
+  const btn=document.getElementById('gen-btn');
+  btn.innerHTML='<span class="spin-icon">◌</span> Generating…';btn.disabled=true;
+  document.getElementById('prompts-list').innerHTML='<div style="padding:40px;text-align:center;color:#5a4880;font-style:italic">Summoning inspiration…</div>';
+  try{
+    const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:MODEL,max_tokens:1000,messages:[{role:'user',content:`Generate 4 unique, evocative writing prompts for poets. Each prompt should be poetic, emotionally rich, and inspiring. Include one each of: Romantic, Dark, Nature, Longing themes. Format as JSON array with objects having fields: genre (uppercase), text (the prompt), moods (array of 1-2 mood strings from: romantic,dark,nature,longing,melancholy,intense,serene). Return only valid JSON, no explanation.`}]})});
+    const data=await res.json();
+    let text=data.content?.map(b=>b.text||'').join('').trim();
+    text=text.replace(/```json|```/g,'').trim();
+    const newPrompts=JSON.parse(text);
+    prompts=[...newPrompts,...prompts].slice(0,10);
+    renderPrompts();
+  }catch(e){renderPrompts()}
+  btn.innerHTML='<span>✦</span> Generate New Prompts';btn.disabled=false;
+}
+
+function renderPrompts(){
+  const filtered=currentFilter==='All'?prompts:prompts.filter(p=>p.genre===currentFilter.toUpperCase()||p.moods?.includes(currentFilter.toLowerCase()));
+  const moodClass={romantic:'mood-romantic',dark:'mood-dark',longing:'mood-melancholy',nature:'mood-serene',melancholy:'mood-melancholy',intense:'mood-intense',serene:'mood-serene'};
+  document.getElementById('prompts-list').innerHTML=filtered.map((p,i)=>`
+    <div class="prompt-card" onclick="usePrompt(${i})">
+      <div class="prompt-genre">${p.genre}</div>
+      <div class="prompt-text">${p.text}</div>
+      <div class="prompt-mood">${(p.moods||[]).map(m=>`<span class="mood-tag ${moodClass[m]||'mood-dark'}">${m}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+function filterPrompt(btn,val){
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');currentFilter=val;renderPrompts();
+}
+
+function usePrompt(idx){
+  const p=prompts[idx];
+  stanzaLines=[[{id:1,val:''},{id:2,val:''}]];
+  openNewEditor('poem');
+  document.getElementById('editor-title').value='';
+  setTimeout(()=>{
+    openModalWith(`<div class="modal-title">Writing Prompt</div><div style="font-family:var(--ff-display);font-size:16px;color:#e0d8f8;font-style:italic;line-height:1.8;padding:12px 0 20px">"${p.text}"</div><button class="modal-btn" onclick="closeModal()">Begin Writing</button><button class="modal-btn-ghost" onclick="closeModal()">Maybe Later</button>`);
+  },100);
+}
+
+// STATS
+function renderStats(){
+  const cal=document.getElementById('cal');cal.innerHTML='';
+  const wrote=[1,2,3,5,6,8,9,10,11,12,13,15];
+  for(let d=1;d<=28;d++){
+    const div=document.createElement('div');div.className='cal-day';
+    if(wrote.includes(d))div.classList.add('wrote');
+    if(d===15)div.classList.add('today');
+    cal.appendChild(div);
+  }
+  const chart=document.getElementById('mood-chart');chart.innerHTML='';
+  [65,85,70,40,50].forEach(h=>{
+    const b=document.createElement('div');b.className='mood-bar';b.style.height=h+'%';chart.appendChild(b);
+  });
+  document.getElementById('total-words-stat').textContent=notes.reduce((a,n)=>a+n.words,0);
+  document.getElementById('stat-poems').textContent=notes.filter(n=>n.category==='poem').length;
+  document.getElementById('stat-lines').textContent=notes.reduce((a,n)=>a+n.lines,0);
+}
+
+// SETTINGS
+function toggleSetting(id){
+  document.getElementById(id).classList.toggle('on');
+}
+function selectTheme(el,theme){
+  document.querySelectorAll('.theme-swatch').forEach(t=>t.classList.remove('selected'));
+  el.classList.add('selected');
+  const themes={
+    dark:{ink:'#0a0a14'},
+    romantic:{ink:'#140008'},
+    intense:{ink:'#100008'}
+  };
+  if(themes[theme])document.getElementById('phone').style.background=themes[theme].ink;
+}
+function changeFont(f){
+  const fonts={crimson:"'Crimson Pro',Georgia,serif",playfair:"'Playfair Display',Georgia,serif",mono:"'JetBrains Mono',monospace"};
+  document.querySelectorAll('.line-input,.prose-editor,.editor-title').forEach(el=>el.style.fontFamily=fonts[f]||fonts.crimson);
+}
+
+// DISTRACTION FREE
+function toggleDF(){
+  dfMode=!dfMode;
+  document.getElementById('phone').classList.toggle('distraction-free',dfMode);
+  document.getElementById('df-btn').style.color=dfMode?'#c084fc':'#7060a0';
+}
+
+// MODALS
+function openCatModal(){
+  const cats=[['poem','🌙 Poem'],['draft','📝 Draft'],['idea','💡 Idea'],['quote','❝ Quote']];
+  openModalWith('<div class="modal-title">Category</div><div class="modal-sub">Organise your writing</div>'+
+    cats.map(([val,label])=>`<button class="modal-btn-ghost" style="margin-top:8px" onclick="setCat('${val}','${label}')">${label}</button>`).join(''));
+}
+function setCat(val,label){
+  document.getElementById('btn-cat').textContent=label;
+  if(currentNote)currentNote.category=val;
+  closeModal();
+}
+function openPinModal(){
+  openModalWith(`<div class="modal-title">Lock with PIN</div><div class="modal-sub">Enter a 4-digit PIN to protect your notes</div>
+    <input class="modal-input" type="number" placeholder="Enter PIN" maxlength="4" inputmode="numeric">
+    <input class="modal-input" type="number" placeholder="Confirm PIN" maxlength="4" inputmode="numeric">
+    <button class="modal-btn" onclick="closeModal()">Set PIN</button><button class="modal-btn-ghost" onclick="closeModal()">Cancel</button>`);
+}
+function openModalWith(html){
+  document.getElementById('modal-body').innerHTML=html;
+  document.getElementById('modal').style.display='flex';
+}
+function closeModal(e){
+  if(!e||e.target===document.getElementById('modal'))document.getElementById('modal').style.display='none';
+}
+window.closeModal=closeModal;
+
+// INIT
+renderRecent();renderPrompts();
+</script>
+</body>
+</html>

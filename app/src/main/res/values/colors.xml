@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="app_background">#0A0A14</color>
+    <color name="purple_primary">#7C3AED</color>
+    <color name="purple_light">#C084FC</color>
+    <color name="deep_bg">#0D0820</color>
+    <color name="white">#FFFFFF</color>
+</resources>

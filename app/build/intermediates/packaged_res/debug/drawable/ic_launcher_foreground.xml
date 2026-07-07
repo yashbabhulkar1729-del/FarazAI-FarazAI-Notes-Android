@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Outer glow circle -->
+    <path
+        android:fillColor="#22C084FC"
+        android:pathData="M54,54m-40,0a40,40 0,1 1,80 0a40,40 0,1 1,-80 0" />
+
+    <!-- Quill body -->
+    <path
+        android:fillColor="#C084FC"
+        android:pathData="M62,28 C68,22 76,24 76,24 C76,24 74,32 68,38 L46,60 L36,68 L44,58 Z" />
+
+    <!-- Quill tip -->
+    <path
+        android:fillColor="#F0E8FF"
+        android:pathData="M36,68 L44,58 L48,62 Z" />
+
+    <!-- Quill vane lines -->
+    <path
+        android:strokeColor="#9D4EDD"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:pathData="M58,34 L52,40" />
+    <path
+        android:strokeColor="#9D4EDD"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:pathData="M63,39 L57,45" />
+
+    <!-- Ink dot at tip -->
+    <path
+        android:fillColor="#E8A44A"
+        android:pathData="M38,66m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0" />
+
+    <!-- Writing line -->
+    <path
+        android:strokeColor="#7C3AED"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M32,76 L60,76" />
+    <path
+        android:strokeColor="#5A2D9A"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:pathData="M32,82 L52,82" />
+
+</vector>
